@@ -5,7 +5,7 @@
 #![deny(rustdoc::broken_intra_doc_links)]
 
 use core::alloc::{GlobalAlloc, Layout};
-use core::ffi::c_void;
+use core::ffi::{c_uint, c_void};
 
 use flipperzero_sys as sys;
 
@@ -14,12 +14,12 @@ pub struct FuriAlloc;
 unsafe impl GlobalAlloc for FuriAlloc {
     #[inline]
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        sys::aligned_malloc(layout.size(), layout.align()) as *mut u8
+        sys::aligned_alloc(layout.align() as c_uint, layout.size() as c_uint) as *mut u8
     }
 
     #[inline]
     unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
-        sys::aligned_free(ptr as *mut c_void);
+        sys::free(ptr as *mut c_void)
     }
 
     #[inline]
